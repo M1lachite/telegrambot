@@ -6,7 +6,7 @@ pipeline {
         APP_NAME = "telegramnotesbot"
         REPO_URL = credentials('REPO_URL')
         CONTAINER_PORT = 8000
-        HOST_PORT = 8080
+        HOST_PORT = 8081
         DOCKERFILE_NAME = "Dockerfile.txt"
         PYTEST_SCRIPT_NAME = "pytest.sh"
         TELEGRAM_API_KEY = credentials('TELEGRAM_API_KEY')
