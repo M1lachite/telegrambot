@@ -6,7 +6,6 @@ pipeline {
         APP_NAME = "telegramnotesbot"
         REPO_URL = credentials('REPO_URL')
         CONTAINER_PORT = 8000
-        HOST_PORT = 8081
         DOCKERFILE_NAME = "Dockerfile.txt"
         PYTEST_SCRIPT_NAME = "pytest.sh"
         TELEGRAM_API_KEY = credentials('TELEGRAM_API_KEY')
@@ -68,10 +67,11 @@ pipeline {
 
                     echo "Uruchamianie nowego kontenera: ${containerName} z obrazu ${dockerImage.id}"
                     sh """
-                        docker run -d --name ${containerName} \
-                        -p ${hostPort}:${appPort} \
-                        -e TELEGRAM_API_KEY='${env.TELEGRAM_API_KEY}' \
-                        -e REPO_URL='${env.REPO_URL}' \
+                        docker run -d --name ${containerName} \\
+                        --network ${env.BOT_NETWORK_NAME} \\
+                        -p ${env.BOT_HOST_PORT}:${appPort} \\
+                        -e TELEGRAM_API_KEY='${env.TELEGRAM_API_KEY}' \\
+                        -e REPO_URL='${env.REPO_URL}' \\
                         ${dockerImage.id}
                     """
                     echo "Nowy kontener ${containerName} uruchomiony na porcie ${env.HOST_PORT}."
