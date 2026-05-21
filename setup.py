@@ -10,5 +10,6 @@ setup(
         "pytest-cov",
         "pyTelegramBotAPI",
         "pytest-mock"
+        "psycopg2-binary"
     ],
 )

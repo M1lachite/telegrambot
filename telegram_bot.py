@@ -1,32 +1,66 @@
 import telebot
 from telebot import types
 import os
-import json
-import time
+import psycopg2
 from typing import List
 from datetime import datetime, timezone
 
 API_KEY = os.environ.get("TELEGRAM_API_KEY", "")
 bot = telebot.TeleBot(API_KEY, parse_mode="HTML")
 
-NOTES_FILE = "notes.json"
 MAX_LAST = 10
+
+# ===== Połączenie z baza danych =============================================
+
+def get_db_connection():
+    """Zwraca połączenie z BD PostgreSQL."""
+    return psycopg2.connect(
+        host=os.environ.get("DB_HOST", "localhost"),
+        port=os.environ.get("DB_PORT", "5432"),
+        dbname=os.environ.get("DB_NAME", "notesdb"),
+        user=os.environ.get("DB_USER", "notesuser"),
+        password=os.environ.get("DB_PASSWORD", "notespassword"),
+    )
+
+def init_db():
+    """Tworzy tabelę notatek jeśli nie istnieje."""
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS notes (
+            id SERIAL PRIMARY KEY,
+            user_name TEXT NOT NULL,
+            note TEXT NOT NULL,
+            ts TIMESTAMPTZ DEFAULT NOW()
+        )
+    """)
+    conn.commit()
+    cur.close()
+    conn.close()
 
 # ===== Funkcje pomocnicze ====================================================
 
 def load_notes() -> List[dict]:
-    """Load the list of notes from *NOTES_FILE* (may be empty)."""
-    if os.path.exists(NOTES_FILE):
-        with open(NOTES_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return []
+    """Pobiera wszystkie notatki z bazy danych."""
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id, user_name, note, ts FROM notes ORDER BY ts ASC")
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return [{"id": r[0], "user": r[1], "note": r[2], "ts": r[3].isoformat()} for r in rows]
 
-
-def save_notes(notes: List[dict]) -> None:
-    """Save *notes* to *NOTES_FILE* in UTF-8 JSON format."""
-    with open(NOTES_FILE, "w", encoding="utf-8") as f:
-        json.dump(notes, f, ensure_ascii=False, indent=2)
-
+def save_notes(user: str, note: str) -> None:
+    """Zapisuje nową notatkę do bazy danych."""
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO notes (user_name, note) VALUES (%s, %s)",
+        (user, note)
+    )
+    conn.commit()
+    cur.close()
+    conn.close()
 
 def build_user_display(user: types.User) -> str:
     """Return a concise representation of a Telegram user."""
@@ -110,15 +144,7 @@ def save_new_note(message: types.Message) -> None:
         return
 
     user_display = build_user_display(message.from_user)
-    notes = load_notes()
-    notes.append(
-        {
-            "user": user_display,
-            "note": text,
-            "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        }
-    )
-    save_notes(notes)
+    save_notes(user_display, text)
 
     bot.reply_to(message, f"✅ Dodano notatkę od <b>{user_display}</b>")
 
@@ -167,4 +193,5 @@ def cmd_hello(message: types.Message) -> None:
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":  # pragma: no cover
+    init_db()
     bot.infinity_polling()
