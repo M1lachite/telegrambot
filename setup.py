@@ -9,7 +9,7 @@ setup(
         "pytest",
         "pytest-cov",
         "pyTelegramBotAPI",
-        "pytest-mock"
+        "pytest-mock".
         "psycopg2-binary"
     ],
 )
