@@ -72,6 +72,10 @@ pipeline {
                         -p ${env.BOT_HOST_PORT}:${appPort} \\
                         -e TELEGRAM_API_KEY='${env.TELEGRAM_API_KEY}' \\
                         -e REPO_URL='${env.REPO_URL}' \\
+                        -e DB_HOST='${env.DB_HOST}' \\
+                        -e DB_NAME='${env.DB_NAME}' \\
+                        -e DB_USER='${env.DB_USER}' \\
+                        -e DB_PASSWORD='${env.DB_PASSWORD}' \\
                         ${dockerImage.id}
                     """
                     echo "Nowy kontener ${containerName} uruchomiony na porcie ${env.HOST_PORT}."
