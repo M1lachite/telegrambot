@@ -33,13 +33,21 @@ fi
 
 # Utwórz nowe środowisko wirtualne
 echo "Tworzenie nowego środowiska wirtualnego w ${VIRTUAL_ENV_DIR}"
-python3 -m venv "$VIRTUAL_ENV_DIR" || { echo "BŁĄD: Nie udało się utworzyć środowiska wirtualnego. Zakończenie."; exit 1; }
+python -m venv "$VIRTUAL_ENV_DIR" || { echo "BŁĄD: Nie udało się utworzyć środowiska wirtualnego. Zakończenie."; exit 1; }
 
 # Aktywuj środowisko wirtualne pod linux
 source "${VIRTUAL_ENV_DIR}/bin/activate" || { echo "BŁĄD: Nie udało się aktywować środowiska wirtualnego. Zakończenie."; exit 1; }
 # Aktywuj środowisko wirtualne pod windows
 #source venv/Scripts/activate
 echo "Środowisko wirtualne aktywowane."
+
+# Ustaw zmienne środowiskowe potrzebne do importu modułu (bez prawdziwej bazy)
+export TELEGRAM_API_KEY="${TELEGRAM_API_KEY:-123456:dummy}"
+export DB_HOST="${DB_HOST:-localhost}"
+export DB_PORT="${DB_PORT:-5432}"
+export DB_NAME="${DB_NAME:-testdb}"
+export DB_USER="${DB_USER:-testuser}"
+export DB_PASSWORD="${DB_PASSWORD:-testpassword}"
 
 # Zaktualizuj pip i zainstaluj zależności
 echo "Instalowanie zależności projektu..."

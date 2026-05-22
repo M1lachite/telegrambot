@@ -192,5 +192,5 @@ def cmd_hello(message: types.Message) -> None:
 # Main loop
 # ---------------------------------------------------------------------------
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     bot.infinity_polling()
