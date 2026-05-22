@@ -33,7 +33,7 @@ fi
 
 # Utwórz nowe środowisko wirtualne
 echo "Tworzenie nowego środowiska wirtualnego w ${VIRTUAL_ENV_DIR}"
-python -m venv "$VIRTUAL_ENV_DIR" || { echo "BŁĄD: Nie udało się utworzyć środowiska wirtualnego. Zakończenie."; exit 1; }
+python3 -m venv "$VIRTUAL_ENV_DIR" || { echo "BŁĄD: Nie udało się utworzyć środowiska wirtualnego. Zakończenie."; exit 1; }
 
 # Aktywuj środowisko wirtualne pod linux
 source "${VIRTUAL_ENV_DIR}/bin/activate" || { echo "BŁĄD: Nie udało się aktywować środowiska wirtualnego. Zakończenie."; exit 1; }
