@@ -22,7 +22,7 @@ def get_db_connection():
         password=os.environ["DB_PASSWORD"]
     )
 
-def init_db():
+'''def init_db():
     """Tworzy tabelę notatek jeśli nie istnieje."""
     conn = get_db_connection()
     cur = conn.cursor()
@@ -37,7 +37,7 @@ def init_db():
     conn.commit()
     cur.close()
     conn.close()
-
+'''
 # ===== Funkcje pomocnicze ====================================================
 
 def load_notes() -> List[dict]:
@@ -192,6 +192,5 @@ def cmd_hello(message: types.Message) -> None:
 # Main loop
 # ---------------------------------------------------------------------------
 
-if __name__ == "__main__":  # pragma: no cover
-    init_db()
+if __name__ == "__main__":
     bot.infinity_polling()
