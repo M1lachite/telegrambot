@@ -44,7 +44,7 @@ def load_notes() -> List[dict]:
     """Pobiera wszystkie notatki z bazy danych."""
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT id, user_name, note, ts FROM notes ORDER BY ts ASC")
+    cur.execute("SELECT id, username, content, created_at FROM notes ORDER BY created_at ASC")
     rows = cur.fetchall()
     cur.close()
     conn.close()
@@ -55,7 +55,7 @@ def save_notes(user: str, note: str) -> None:
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute(
-        "INSERT INTO notes (user_name, note) VALUES (%s, %s)",
+        "INSERT INTO notes (username, content) VALUES (%s, %s)",
         (user, note)
     )
     conn.commit()
